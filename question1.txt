@@ -1,0 +1,22 @@
+C:   (error: cannot find identifier x = 21;)
+int main() {
+x = 21;
+int x;
+x = 42;
+return 0;
+}
+
+C++:  (error: cannot find identifier x = 21;)
+int main() {
+x = 21;
+int x;
+x = 42;
+}
+
+Java:  (error: cannot find symbol x = 21;)
+public int (int x)
+{
+x = 21;
+x = 42;
+return x;
+}

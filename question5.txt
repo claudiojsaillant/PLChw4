@@ -1,0 +1,19 @@
+$mainVar = "No Change";
+sub printVar {
+     print "String: $mainVar \n";
+}
+
+sub staticScoping {
+    my $mainVar = "Static Change";
+    printVar();
+}
+
+sub dynamicScoping {
+    local $mainVar = "Local Change";
+    printVar();
+
+}
+
+
+staticScoping();
+dynamicScoping();

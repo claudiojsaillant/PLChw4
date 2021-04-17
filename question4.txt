@@ -1,1 +1,129 @@
-Q4
+import java.util.*;
+import java.io.*;
+
+class Main {
+	static String myTkn;
+	static String line;
+	static File file;
+	static Scanner scanner;
+	static int position = 0;
+	static char[] myString;
+	static int back, front, len, lineNum; 
+	static class Position{
+		int lineNo;
+		int offset;
+		Position(){
+			lineNo = 1;
+			offset = 0;
+		}
+	}
+	static Position Pos;
+  
+	// Returns 'true' if the string is a VALID IDENTIFIER. 
+	static boolean validIdentifier(String ss) 
+	{ 
+		char[] myString = ss.toCharArray();
+		if (myString[0] == '$' || myString[0] == '@')	
+    		if ( (myString[1] >= 'a' && myString[1] <= 'z') || (myString[1] >= 'A' && myString[1] <= 'Z') ) {
+			for (int i = 2; i < ss.length();i++){
+				if ((myString[i] >= 'a' && myString[i] <= 'z') || (myString[i] >= 'A' && myString[i] <= 'Z') ||
+				(myString[i] >= '0' && myString[i] <= '9') || (myString[i] == '_')) continue;
+                   		else return (false);
+			} 
+    			return (true);
+		}
+		return (false); 
+	} 
+
+	//returns kind of token
+	static String kind(String tkn) {
+		if (validIdentifier(tkn)) return("ID");		
+		if (tkn.equals(";") || tkn.equals("(") ||
+		    tkn.equals(")") || tkn.equals("{") ||
+		    tkn.equals("}") || tkn.equals(",") || tkn.equals("..") ) 
+			return(tkn);
+		return("invalid");
+	}
+  
+	// Parse and return next token 
+	static String next() 
+	{	
+		if (back < len && myString[back] == ' '){
+			while (back <len && (myString[back] == ' '|| myString[back] == '\t')) back++;
+			 front = back;
+		}
+		if (front>=len) {
+			if (scanner.hasNextLine()){
+				 line = scanner.nextLine();
+				 lineNum++;
+			}
+			else return("end-of-text");
+			len = line.length();
+			myString = line.toCharArray();
+			back = 0;
+			while (back<len && (myString[back] == ' '|| myString[back] == '\t')) back++;
+			front = back;
+			 
+		} 
+    if (front < len && back <= front) {
+			if (myString[back] == '\"'){
+				for(int j = back + 1;j < len; j++){
+					if (myString[j] == '\"'){
+						int oldleft = back;
+						back = j + 1; 
+						front = back;
+						return(line.substring(oldleft,j + 1));
+					}
+				}
+			}	
+			if (front == len){
+				position = back;
+				return(line.substring(back, front));
+			}
+
+  } 
+		return(null); 
+	} 
+  	static String value(String tkn){
+		return(tkn);
+	}
+	
+	static Position position(){
+		Position Pos = new Position();
+		Pos.lineNo = lineNum;	 
+		Pos.offset = position + 1;
+		return(Pos);
+	}	
+
+	public static void main(String[] args) throws Exception {
+		file = new File("sample.txt");
+		scanner = new Scanner(file);
+		back = 0; 
+		front = 0;
+		lineNum = 1;
+		if (scanner.hasNextLine()) line = scanner.nextLine();
+		else return;
+		len = line.length();
+		myString = line.toCharArray();
+		myTkn = next();
+		
+		String tokenkind = kind(myTkn);
+		
+		while (!tokenkind.equals("end-of-text")){
+				if (tokenkind.equals("ID")){
+					System.out.println(myTkn);
+				}
+				else if (tokenkind.equals("invalid")){				
+					System.out.println("Invalid token: " + myTkn);
+					
+				}
+				else {
+					System.out.println(myTkn);
+				}
+		    myTkn = next();
+			if (myTkn == null) break;
+			tokenkind = kind(myTkn);			
+		}
+		
+	}
+}
